@@ -34,7 +34,7 @@ import java.util.Map;
 @RequestMapping("/manage/topic")
 public class CmsTopicController extends BaseController {
 
-	private static Logger _log = LoggerFactory.getLogger(CmsTopicController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CmsTopicController.class);
 	
 	@Autowired
 	private CmsTopicService cmsTopicService;
@@ -56,14 +56,12 @@ public class CmsTopicController extends BaseController {
 			@RequestParam(required = false, value = "sort") String sort,
 			@RequestParam(required = false, value = "order") String order) {
 		CmsTopicExample cmsTopicExample = new CmsTopicExample();
-		cmsTopicExample.setOffset(offset);
-		cmsTopicExample.setLimit(limit);
 		if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(order)) {
 			cmsTopicExample.setOrderByClause(sort + " " + order);
 		}
-		List<CmsTopic> rows = cmsTopicService.selectByExample(cmsTopicExample);
+		List<CmsTopic> rows = cmsTopicService.selectByExampleForOffsetPage(cmsTopicExample, offset, limit);
 		long total = cmsTopicService.countByExample(cmsTopicExample);
-		Map<String, Object> result = new HashMap<>();
+		Map<String, Object> result = new HashMap<>(2);
 		result.put("rows", rows);
 		result.put("total", total);
 		return result;

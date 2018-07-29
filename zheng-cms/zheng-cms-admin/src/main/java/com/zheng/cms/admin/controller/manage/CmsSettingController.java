@@ -9,6 +9,7 @@ import com.zheng.cms.dao.model.CmsSetting;
 import com.zheng.cms.dao.model.CmsSettingExample;
 import com.zheng.cms.rpc.api.CmsSettingService;
 import com.zheng.common.base.BaseController;
+import com.zheng.common.util.StringUtil;
 import com.zheng.common.validator.LengthValidator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,7 +35,7 @@ import java.util.Map;
 @RequestMapping("/manage/setting")
 public class CmsSettingController extends BaseController {
 
-	private static Logger _log = LoggerFactory.getLogger(CmsSettingController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CmsSettingController.class);
 	
 	@Autowired
 	private CmsSettingService cmsSettingService;
@@ -56,14 +57,12 @@ public class CmsSettingController extends BaseController {
 			@RequestParam(required = false, value = "sort") String sort,
 			@RequestParam(required = false, value = "order") String order) {
 		CmsSettingExample cmsSettingExample = new CmsSettingExample();
-		cmsSettingExample.setOffset(offset);
-		cmsSettingExample.setLimit(limit);
 		if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(order)) {
-			cmsSettingExample.setOrderByClause(sort + " " + order);
+			cmsSettingExample.setOrderByClause(StringUtil.humpToLine(sort) + " " + order);
 		}
-		List<CmsSetting> rows = cmsSettingService.selectByExample(cmsSettingExample);
+		List<CmsSetting> rows = cmsSettingService.selectByExampleForOffsetPage(cmsSettingExample, offset, limit);
 		long total = cmsSettingService.countByExample(cmsSettingExample);
-		Map<String, Object> result = new HashMap<>();
+		Map<String, Object> result = new HashMap<>(2);
 		result.put("rows", rows);
 		result.put("total", total);
 		return result;

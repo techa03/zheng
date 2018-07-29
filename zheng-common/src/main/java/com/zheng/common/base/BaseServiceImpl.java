@@ -1,11 +1,13 @@
 package com.zheng.common.base;
 
+import com.github.pagehelper.PageHelper;
 import com.zheng.common.db.DataSourceEnum;
 import com.zheng.common.db.DynamicDataSource;
 import com.zheng.common.util.SpringContextUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.annotations.Param;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
@@ -25,7 +27,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method countByExample = mapper.getClass().getDeclaredMethod("countByExample", example.getClass());
 			Object result = countByExample.invoke(mapper, example);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -39,7 +45,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method deleteByExample = mapper.getClass().getDeclaredMethod("deleteByExample", example.getClass());
 			Object result = deleteByExample.invoke(mapper, example);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -53,7 +63,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method deleteByPrimaryKey = mapper.getClass().getDeclaredMethod("deleteByPrimaryKey", id.getClass());
 			Object result = deleteByPrimaryKey.invoke(mapper, id);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -67,7 +81,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method insert = mapper.getClass().getDeclaredMethod("insert", record.getClass());
 			Object result = insert.invoke(mapper, record);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -81,7 +99,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method insertSelective = mapper.getClass().getDeclaredMethod("insertSelective", record.getClass());
 			Object result = insertSelective.invoke(mapper, record);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -95,7 +117,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method selectByExampleWithBLOBs = mapper.getClass().getDeclaredMethod("selectByExampleWithBLOBs", example.getClass());
 			Object result = selectByExampleWithBLOBs.invoke(mapper, example);
 			return (List<Record>) result;
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -109,7 +135,87 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method selectByExample = mapper.getClass().getDeclaredMethod("selectByExample", example.getClass());
 			Object result = selectByExample.invoke(mapper, example);
 			return (List<Record>) result;
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		DynamicDataSource.clearDataSource();
+		return null;
+	}
+
+	@Override
+	public List<Record> selectByExampleWithBLOBsForStartPage(Example example, Integer pageNum, Integer pageSize) {
+		try {
+			DynamicDataSource.setDataSource(DataSourceEnum.SLAVE.getName());
+			Method selectByExampleWithBLOBs = mapper.getClass().getDeclaredMethod("selectByExampleWithBLOBs", example.getClass());
+			PageHelper.startPage(pageNum, pageSize, false);
+			Object result = selectByExampleWithBLOBs.invoke(mapper, example);
+			return (List<Record>) result;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		DynamicDataSource.clearDataSource();
+		return null;
+	}
+
+	@Override
+	public List<Record> selectByExampleForStartPage(Example example, Integer pageNum, Integer pageSize) {
+		try {
+			DynamicDataSource.setDataSource(DataSourceEnum.SLAVE.getName());
+			Method selectByExample = mapper.getClass().getDeclaredMethod("selectByExample", example.getClass());
+			PageHelper.startPage(pageNum, pageSize, false);
+			Object result = selectByExample.invoke(mapper, example);
+			return (List<Record>) result;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		DynamicDataSource.clearDataSource();
+		return null;
+	}
+
+	@Override
+	public List<Record> selectByExampleWithBLOBsForOffsetPage(Example example, Integer offset, Integer limit) {
+		try {
+			DynamicDataSource.setDataSource(DataSourceEnum.SLAVE.getName());
+			Method selectByExampleWithBLOBs = mapper.getClass().getDeclaredMethod("selectByExampleWithBLOBs", example.getClass());
+			PageHelper.offsetPage(offset, limit, false);
+			Object result = selectByExampleWithBLOBs.invoke(mapper, example);
+			return (List<Record>) result;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		DynamicDataSource.clearDataSource();
+		return null;
+	}
+
+	@Override
+	public List<Record> selectByExampleForOffsetPage(Example example, Integer offset, Integer limit) {
+		try {
+			DynamicDataSource.setDataSource(DataSourceEnum.SLAVE.getName());
+			Method selectByExample = mapper.getClass().getDeclaredMethod("selectByExample", example.getClass());
+			PageHelper.offsetPage(offset, limit, false);
+			Object result = selectByExample.invoke(mapper, example);
+			return (List<Record>) result;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -125,7 +231,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			if (null != result && result.size() > 0) {
 				return result.get(0);
 			}
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -141,7 +251,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			if (null != result && result.size() > 0) {
 				return result.get(0);
 			}
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -155,7 +269,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method selectByPrimaryKey = mapper.getClass().getDeclaredMethod("selectByPrimaryKey", id.getClass());
 			Object result = selectByPrimaryKey.invoke(mapper, id);
 			return (Record) result;
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -169,7 +287,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method updateByExampleSelective = mapper.getClass().getDeclaredMethod("updateByExampleSelective", record.getClass(), example.getClass());
 			Object result = updateByExampleSelective.invoke(mapper, record, example);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -183,7 +305,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method updateByExampleWithBLOBs = mapper.getClass().getDeclaredMethod("updateByExampleWithBLOBs", record.getClass(), example.getClass());
 			Object result = updateByExampleWithBLOBs.invoke(mapper, record, example);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -197,7 +323,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method updateByExample = mapper.getClass().getDeclaredMethod("updateByExample", record.getClass(), example.getClass());
 			Object result = updateByExample.invoke(mapper, record, example);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -211,7 +341,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method updateByPrimaryKeySelective = mapper.getClass().getDeclaredMethod("updateByPrimaryKeySelective", record.getClass());
 			Object result = updateByPrimaryKeySelective.invoke(mapper, record);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -225,7 +359,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method updateByPrimaryKeyWithBLOBs = mapper.getClass().getDeclaredMethod("updateByPrimaryKeyWithBLOBs", record.getClass());
 			Object result = updateByPrimaryKeyWithBLOBs.invoke(mapper, record);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -239,7 +377,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 			Method updateByPrimaryKey = mapper.getClass().getDeclaredMethod("updateByPrimaryKey", record.getClass());
 			Object result = updateByPrimaryKey.invoke(mapper, record);
 			return Integer.parseInt(String.valueOf(result));
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();
@@ -265,7 +407,11 @@ public abstract class BaseServiceImpl<Mapper, Record, Example> implements BaseSe
 				count += Integer.parseInt(String.valueOf(result));
 			}
 			return count;
-		} catch (Exception e) {
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		DynamicDataSource.clearDataSource();

@@ -7,20 +7,21 @@ import com.zheng.upms.rpc.mapper.UpmsApiMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
- * 用户service实现
+ * UpmsApiService实现
  * Created by shuzheng on 2016/01/19.
  */
 @Service
 @Transactional
 public class UpmsApiServiceImpl implements UpmsApiService {
 
-    private static Logger _log = LoggerFactory.getLogger(UpmsApiServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpmsApiServiceImpl.class);
 
     @Autowired
     UpmsUserMapper upmsUserMapper;
@@ -53,11 +54,22 @@ public class UpmsApiServiceImpl implements UpmsApiService {
         // 用户不存在或锁定状态
         UpmsUser upmsUser = upmsUserMapper.selectByPrimaryKey(upmsUserId);
         if (null == upmsUser || 1 == upmsUser.getLocked()) {
-            _log.info("selectUpmsPermissionByUpmsUserId : upmsUserId={}", upmsUserId);
+            LOGGER.info("selectUpmsPermissionByUpmsUserId : upmsUserId={}", upmsUserId);
             return null;
         }
         List<UpmsPermission> upmsPermissions = upmsApiMapper.selectUpmsPermissionByUpmsUserId(upmsUserId);
         return upmsPermissions;
+    }
+
+    /**
+     * 根据用户id获取所拥有的权限
+     * @param upmsUserId
+     * @return
+     */
+    @Override
+    @Cacheable(value = "zheng-upms-rpc-service-ehcache", key = "'selectUpmsPermissionByUpmsUserId_' + #upmsUserId")
+    public List<UpmsPermission> selectUpmsPermissionByUpmsUserIdByCache(Integer upmsUserId) {
+        return selectUpmsPermissionByUpmsUserId(upmsUserId);
     }
 
     /**
@@ -70,11 +82,22 @@ public class UpmsApiServiceImpl implements UpmsApiService {
         // 用户不存在或锁定状态
         UpmsUser upmsUser = upmsUserMapper.selectByPrimaryKey(upmsUserId);
         if (null == upmsUser || 1 == upmsUser.getLocked()) {
-            _log.info("selectUpmsRoleByUpmsUserId : upmsUserId={}", upmsUserId);
+            LOGGER.info("selectUpmsRoleByUpmsUserId : upmsUserId={}", upmsUserId);
             return null;
         }
         List<UpmsRole> upmsRoles = upmsApiMapper.selectUpmsRoleByUpmsUserId(upmsUserId);
         return upmsRoles;
+    }
+
+    /**
+     * 根据用户id获取所属的角色
+     * @param upmsUserId
+     * @return
+     */
+    @Override
+    @Cacheable(value = "zheng-upms-rpc-service-ehcache", key = "'selectUpmsRoleByUpmsUserId_' + #upmsUserId")
+    public List<UpmsRole> selectUpmsRoleByUpmsUserIdByCache(Integer upmsUserId) {
+        return selectUpmsRoleByUpmsUserId(upmsUserId);
     }
 
     /**

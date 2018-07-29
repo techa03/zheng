@@ -1,6 +1,7 @@
 package com.zheng.upms.server.controller.manage;
 
 import com.zheng.common.base.BaseController;
+import com.zheng.common.util.StringUtil;
 import com.zheng.upms.common.constant.UpmsResult;
 import com.zheng.upms.common.constant.UpmsResultConstant;
 import com.zheng.upms.dao.model.UpmsLog;
@@ -29,7 +30,7 @@ import java.util.Map;
 @RequestMapping("/manage/log")
 public class UpmsLogController extends BaseController {
 
-    private static Logger _log = LoggerFactory.getLogger(UpmsLogController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpmsLogController.class);
 
     @Autowired
     private UpmsLogService upmsLogService;
@@ -52,16 +53,14 @@ public class UpmsLogController extends BaseController {
             @RequestParam(required = false, value = "sort") String sort,
             @RequestParam(required = false, value = "order") String order) {
         UpmsLogExample upmsLogExample = new UpmsLogExample();
-        upmsLogExample.setOffset(offset);
-        upmsLogExample.setLimit(limit);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(order)) {
-            upmsLogExample.setOrderByClause(sort + " " + order);
+            upmsLogExample.setOrderByClause(StringUtil.humpToLine(sort) + " " + order);
         }
         if (StringUtils.isNotBlank(search)) {
             upmsLogExample.or()
                     .andDescriptionLike("%" + search + "%");
         }
-        List<UpmsLog> rows = upmsLogService.selectByExample(upmsLogExample);
+        List<UpmsLog> rows = upmsLogService.selectByExampleForOffsetPage(upmsLogExample, offset, limit);
         long total = upmsLogService.countByExample(upmsLogExample);
         Map<String, Object> result = new HashMap<>();
         result.put("rows", rows);

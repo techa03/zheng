@@ -26,7 +26,7 @@ import java.util.List;
 @RequestMapping(value = "/topic")
 public class TopicController extends BaseController {
 
-    private static Logger _log = LoggerFactory.getLogger(TopicController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TopicController.class);
 
     @Autowired
     private CmsTopicService cmsTopicService;
@@ -39,9 +39,7 @@ public class TopicController extends BaseController {
         // 专题列表
         int rows = 10;
         CmsTopicExample cmsTopicExample = new CmsTopicExample();
-        cmsTopicExample.setOffset((page - 1) * rows);
-        cmsTopicExample.setLimit(rows);
-        List<CmsTopic> topics = cmsTopicService.selectByExample(cmsTopicExample);
+        List<CmsTopic> topics = cmsTopicService.selectByExampleForOffsetPage(cmsTopicExample, (page - 1) * rows, rows);
         model.addAttribute("topics", topics);
         // 文章总数
         long total = cmsTopicService.countByExample(cmsTopicExample);

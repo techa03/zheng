@@ -27,7 +27,7 @@ import java.util.List;
 @RequestMapping(value = "/blog")
 public class BlogController extends BaseController {
 
-    private static Logger _log = LoggerFactory.getLogger(BlogController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlogController.class);
     private static String CODE = "blog";
     private static Integer USERID = 1;
 
@@ -87,12 +87,10 @@ public class BlogController extends BaseController {
         cmsArticleExample.createCriteria()
                 .andStatusEqualTo((byte) 1)
                 .andSystemIdEqualTo(system.getSystemId());
-        cmsArticleExample.setOffset((page - 1) * rows);
-        cmsArticleExample.setLimit(rows);
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(order)) {
             cmsArticleExample.setOrderByClause(sort + " " + order);
         }
-        List<CmsArticle> articles = cmsArticleService.selectByExample(cmsArticleExample);
+        List<CmsArticle> articles = cmsArticleService.selectByExampleForOffsetPage(cmsArticleExample, (page - 1) * rows, rows);
         model.addAttribute("articles", articles);
         // 文章总数
         long total = cmsArticleService.countByExample(cmsArticleExample);
